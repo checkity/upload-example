@@ -1,0 +1,24 @@
+name: main
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+      - uses: actions/cache@v2
+        with:
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          path: ~/.m2/repository
+          restore-keys: maven-
+      - run: mvn --batch-mode verify
+      - uses: checkity/upload@v1
+        with:
+          file-pattern: '**/jacoco.xml'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
